@@ -1,0 +1,53 @@
+<!-- partial:index.partial.html -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <div id="myCanvas"></div>
+	<script id="fragmentShader" type="x-shader/x-fragment">
+
+        #define TWO_PI 6.2831853072
+        #define PI 3.14159265359
+
+        precision highp float;
+        uniform vec2 resolution;
+        uniform float time;
+        varying vec2 vUv;
+
+
+		vec3 colwave(vec2 uv, float delay){
+			//bure shake
+			float shake = mix(0., 1.0, 2.0);
+			//wave
+			float wave = ( sin(uv.x * 1.5 * 6.2 - time * 0.2) + sin(delay + uv.x * 0.2 * 6.2 - time * 0.2) ) / shake ;
+			//colwave
+			float colwave = 0.02 /  abs(uv.y+wave)*2.0; //線の太さ
+			return vec3(1.0, 1.0, 1.0) * colwave;
+		}
+
+
+        void main(void) {
+        vec2 uv = - 1.0 + 2.0 * vUv;
+        float t = time*0.1;
+        float lineWidth = 0.01;
+
+		vec3 color = colwave(uv,0.1) + colwave(uv,1.2) + colwave(uv,4.0);
+
+        gl_FragColor = vec4( color , 1.0);
+		
+    	}
+</script>
+
+		<script id="vertexShader" type="x-shader/x-vertex">
+
+			varying vec2 vUv;
+
+			void main()
+			{
+				vUv = uv;
+				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+				gl_Position = projectionMatrix * mvPosition;
+			}
+
+		</script>
+
+
+
